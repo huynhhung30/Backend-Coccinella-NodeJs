@@ -1,0 +1,17 @@
+npx sequelize-cli db:migrate
+npx sequelize-cli db:seed:all
+coccinella
+npm start
+npm
+// Để sử dụng tính năng migration bạn cần cài thêm package sequelize-cli
+
+    	$ npm install --save sequelize-cli
+
+// Các command của sequelize-cli
+
+        $ sequelize db:migrate        // Chạy migration.
+        $ sequelize db:migrate:undo   // Rollback lần cuối chạy migration.
+        $ sequelize help              // Hiển thị help.
+        $ sequelize init              // Khởi tạo project.
+        $ npm sequelize migration:create  // Tạo 1 migration mới.
+        $ sequelize version
