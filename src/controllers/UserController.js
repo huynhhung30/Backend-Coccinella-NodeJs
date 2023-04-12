@@ -28,7 +28,7 @@ let Register = async (req, res) => {
 };
 
 let GetUsersList = async (req, res) => {
-  let id = req.body.id;
+  let id = req.query.id;
   if (!id) {
     return res.status(404).json({
       status: 404,
