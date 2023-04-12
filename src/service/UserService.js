@@ -173,7 +173,6 @@ let GetAllUsersList = (id) => {
     }
   });
 };
-
 module.exports = {
   userLogin: userLogin,
   userRegister: userRegister,
