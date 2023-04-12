@@ -29,13 +29,18 @@ let Register = async (req, res) => {
 
 let GetUsersList = async (req, res) => {
   let id = req.body.id;
-  console.log("id", id);
+  if (!id) {
+    return res.status(404).json({
+      status: 404,
+      message: "Missing required Parameter",
+      data: [],
+    });
+  }
   let data = await UserService.GetAllUsersList(id);
-  console.log("data", data);
   return res.status(200).json({
-    data: data,
-    message: data.message,
-    status: data.status,
+    status: 200,
+    message: "Get Success",
+    data,
   });
 };
 

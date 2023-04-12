@@ -4,7 +4,10 @@
     "password": "0932736505",
     "database": "coccinella",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "logging": false,
+    "query": { "raw": true },
+    "timenone": "+07:00"
   },
   "test": {
     "username": "root",

@@ -134,40 +134,23 @@ let checkEmailIsExist = (email) => {
 let GetAllUsersList = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let user = {};
-
+      let user = "";
       if (id === "all") {
         user = await db.users.findAll({
           attributes: {
             exclude: ["password"],
           },
-          raw: true,
         });
-        if (!user) {
-          user.status = 200;
-          user.message = "Get all users success";
-          return resolve(user);
-        }
-        user.status = 404;
-        user.message = "Data Not Found";
-        return resolve(user);
-      } else {
+      }
+      if (id && id !== "all") {
         user = await db.users.findOne({
           attributes: {
             exclude: ["password"],
           },
           where: { id: id },
-          raw: true,
         });
-        if (user) {
-          user.status = 201;
-          user.message = "Get user success";
-          return resolve(user);
-        }
-        user.status = 404;
-        user.message = "User Not Found";
-        return resolve(user);
       }
+      resolve(user);
     } catch (e) {
       reject(e);
     }
