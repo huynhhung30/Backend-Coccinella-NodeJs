@@ -43,9 +43,31 @@ let GetUsersList = async (req, res) => {
     data,
   });
 };
+let UpdateUser = async (req, res) => {
+  let body = req.body;
+  let userInfo = await UserService.EditUser(body);
+  return res.status(200).json({
+    data: userInfo,
+  });
+};
+// Delete User
+let DeleteUser = async (req, res) => {
+  if (!req.body.id) {
+    return res.status(200).json({
+      status: 404,
+      message: "Missing ID User plz check input",
+    });
+  }
 
+  let userInfo = await UserService.DeleteUser(req.body.id);
+  return res.status(200).json({
+    data: userInfo,
+  });
+};
 module.exports = {
   UserLogin: UserLogin,
   Register: Register,
   GetUsersList: GetUsersList,
+  UpdateUser: UpdateUser,
+  DeleteUser: DeleteUser,
 };

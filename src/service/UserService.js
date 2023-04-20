@@ -50,25 +50,30 @@ let userRegister = (body) => {
     try {
       let userInfo = {};
       let checkEmailExist = await checkEmailIsExist(body.email);
-      if (!body.email || !body.gender || !body.codeName) {
-        userInfo.status = 404;
-        userInfo.message = "Plz check input";
-        return resolve(userInfo);
-      }
-      if (!body.avatar) {
-        body.avatar =
-          "https://kynguyenlamdep.com/wp-content/uploads/2021/12/anh-dam-may-scaled.jpg";
-      }
-      if (!body.backgroundPhoto) {
-        body.backgroundPhoto =
-          "https://kynguyenlamdep.com/wp-content/uploads/2021/12/anh-dam-may-scaled.jpg";
-      }
       if (checkEmailExist) {
         userInfo.status = 404;
         userInfo.message = "Email already exist";
         console.log("checkEmailExist", checkEmailExist);
         return resolve(userInfo);
       }
+      if (!body.email || !body.codeName) {
+        userInfo.status = 404;
+        userInfo.message = "Plz check input";
+        return resolve(userInfo);
+      }
+      if (!body.avatar && body.gender === 1) {
+        body.avatar =
+          "https://assets.codepen.io/39255/internal/avatars/users/default.png?height=120&width=120";
+      }
+      if (!body.avatar && body.gender === 0) {
+        body.avatar =
+          "https://media.istockphoto.com/id/1390707044/vi/vec-to/b%C3%B2-r%E1%BB%ABng-bizon.jpg?s=612x612&w=is&k=20&c=7jmY3RfSIzV7g3P4v-n_LjvAyP6nK40MGnjOoAEg_Qg=";
+      }
+      if (!body.backgroundPhoto) {
+        body.backgroundPhoto =
+          "https://kynguyenlamdep.com/wp-content/uploads/2021/12/anh-dam-may-scaled.jpg";
+      }
+
       console.log("body", body);
       let newPassword = await hashPassword(body.password);
 
@@ -89,7 +94,7 @@ let userRegister = (body) => {
         },
         { logging: (msg) => console.log("loggggg hereeeee", msg) }
       );
-      userInfo.status = 201;
+      userInfo.status = 200;
       userInfo.message = "Register Success";
       resolve(userInfo);
     } catch (e) {
@@ -156,8 +161,80 @@ let GetAllUsersList = (id) => {
     }
   });
 };
+
+let EditUser = (body) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!body.id) {
+        resolve({
+          status: 404,
+          message: "Missing user id plz check input",
+        });
+      }
+      let user = await db.users.findOne({
+        where: { id: body.id },
+        raw: false,
+      });
+      console.log("body", body);
+      let newPassword = await hashPassword(body.password);
+      if (user) {
+        (user.password = newPassword),
+          (user.firstName = body.firstName),
+          (user.lastName = body.lastName),
+          (user.address = body.address),
+          (user.codeName = body.codeName),
+          (user.phone = body.phone),
+          (user.introduce = body.introduce),
+          (user.avatar = body.avatar),
+          (user.backgroundPhoto = body.backgroundPhoto),
+          await user.save();
+        resolve({
+          status: 201,
+          message: "Update Success",
+        });
+      } else {
+        resolve({
+          status: 404,
+          message: "User not found",
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+// DeleteUser
+let DeleteUser = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await db.users.findOne({
+        attributes: {
+          exclude: ["password"],
+        },
+        where: { id: id },
+      });
+      if (!user) {
+        resolve({
+          status: 404,
+          message: "User not found",
+        });
+      }
+      await db.users.destroy({ where: { id: id } });
+      resolve({
+        status: 200,
+        message: "Delete user success!",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   userLogin: userLogin,
   userRegister: userRegister,
   GetAllUsersList: GetAllUsersList,
+  DeleteUser: DeleteUser,
+  EditUser: EditUser,
 };
