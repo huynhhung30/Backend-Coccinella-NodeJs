@@ -1,5 +1,7 @@
 import db from "../models/index";
 import bcrypt from "bcryptjs";
+var jwt = require("jsonwebtoken");
+require("dotenv").config();
 let userLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -14,20 +16,31 @@ let userLogin = (email, password) => {
         );
         // userInfo.password = "";
         if (checkPassword) {
-          data.status = 200;
-          data.message = "Login Success";
           delete userInfo.password;
-          data.user = userInfo;
-          return resolve(data);
+          //=-=-=-=-=-=-=-=-=-=
+          const token = jwt.sign(
+            { user_id: userInfo.id },
+            process.env.TOKEN_KEY,
+            {
+              expiresIn: "24h",
+            }
+          );
+          userInfo.token = token;
+          //=-=-=-=-=-=-=-=-=-=
+
+          return resolve({
+            status: 200,
+            message: "Login Success",
+            data: userInfo,
+          });
         } else {
-          data.status = 201;
-          data.message = "Password is Incorrect";
-          return resolve(data);
+          return resolve({ status: 404, message: "Password is Incorrect" });
         }
       } else {
-        data.status = 404;
-        data.message = "Username or Password is Incorrect";
-        return resolve(data);
+        return resolve({
+          status: 404,
+          message: "Username or Password is Incorrect",
+        });
       }
     } catch (e) {
       reject(e);
@@ -51,15 +64,16 @@ let userRegister = (body) => {
       let userInfo = {};
       let checkEmailExist = await checkEmailIsExist(body.email);
       if (checkEmailExist) {
-        userInfo.status = 404;
-        userInfo.message = "Email already exist";
-        console.log("checkEmailExist", checkEmailExist);
-        return resolve(userInfo);
+        return resolve({
+          status: 404,
+          message: "Email already exist",
+        });
       }
       if (!body.email || !body.codeName) {
-        userInfo.status = 404;
-        userInfo.message = "Plz check input";
-        return resolve(userInfo);
+        return resolve({
+          status: 404,
+          message: "Plz check input",
+        });
       }
       if (!body.avatar && body.gender === 1) {
         body.avatar =
@@ -94,9 +108,11 @@ let userRegister = (body) => {
         },
         { logging: (msg) => console.log("loggggg hereeeee", msg) }
       );
-      userInfo.status = 200;
-      userInfo.message = "Register Success";
-      resolve(userInfo);
+      resolve({
+        status: 200,
+        message: "Register Success",
+        data: userInfo,
+      });
     } catch (e) {
       reject(e);
     }
@@ -136,26 +152,44 @@ let checkEmailIsExist = (email) => {
   });
 };
 // GetAllUsersList
-let GetAllUsersList = (id) => {
+let GetAllUsersList = (queryParams) => {
   return new Promise(async (resolve, reject) => {
     try {
       let user = "";
-      if (id === "all") {
-        user = await db.users.findAll({
+      if (queryParams.id === "all") {
+        user = await db.users.findAndCountAll({
+          offset: parseInt((queryParams.page - 1) * queryParams.limit),
+          limit: parseInt(queryParams.limit),
           attributes: {
             exclude: ["password"],
           },
+          order: [["id", "DESC"]],
+          logging: console.log,
         });
-      }
-      if (id && id !== "all") {
+        let meta = {};
+        meta.CurrentPage = parseInt(queryParams.page);
+        meta.CurrentCount = parseInt(user.rows.length);
+        meta.TotalCount = parseInt(user.count);
+        meta.TotalPage = parseInt(user.count / queryParams.limit) + 1;
+        resolve({
+          status: 200,
+          message: "Get users list success!",
+          data: user.rows,
+          meta: meta,
+        });
+      } else {
         user = await db.users.findOne({
           attributes: {
             exclude: ["password"],
           },
-          where: { id: id },
+          where: { id: queryParams.id },
+        });
+        resolve({
+          status: 200,
+          message: "Get users success!",
+          data: user,
         });
       }
-      resolve(user);
     } catch (e) {
       reject(e);
     }

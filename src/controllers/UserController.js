@@ -28,19 +28,21 @@ let Register = async (req, res) => {
 };
 
 let GetUsersList = async (req, res) => {
-  let id = req.query.id;
-  if (!id) {
+  let query = {};
+  query.limit = req.query.limit;
+  query.page = req.query.page;
+  query.id = req.query.id;
+  console.log("=-=-=query-=-", query);
+  if (!query.id) {
     return res.status(404).json({
       status: 404,
       message: "Missing required Parameter",
       data: [],
     });
   }
-  let data = await UserService.GetAllUsersList(id);
+  let result = await UserService.GetAllUsersList(query);
   return res.status(200).json({
-    status: 200,
-    message: "Get Success",
-    data,
+    data: result,
   });
 };
 let UpdateUser = async (req, res) => {
