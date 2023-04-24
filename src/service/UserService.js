@@ -75,11 +75,11 @@ let userRegister = (body) => {
           message: "Plz check input",
         });
       }
-      if (!body.avatar && body.gender === 1) {
+      if (!body.avatar && body.gender === true) {
         body.avatar =
           "https://assets.codepen.io/39255/internal/avatars/users/default.png?height=120&width=120";
       }
-      if (!body.avatar && body.gender === 0) {
+      if (!body.avatar && body.gender === false) {
         body.avatar =
           "https://media.istockphoto.com/id/1390707044/vi/vec-to/b%C3%B2-r%E1%BB%ABng-bizon.jpg?s=612x612&w=is&k=20&c=7jmY3RfSIzV7g3P4v-n_LjvAyP6nK40MGnjOoAEg_Qg=";
       }
