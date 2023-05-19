@@ -6,6 +6,11 @@ import connectDB from "./config/ConnectDB";
 import cors from "cors";
 require("dotenv").config();
 let app = express();
+app.get("/", (req, res) => {
+  res.json({
+    msg:"Docker run here! shut the fuck up"
+  })
+})
 // app.use(cors({ origin: true }));
 app.use(
   cors({
@@ -23,8 +28,9 @@ viewEngine(app);
 // config web routes
 
 webRoutes(app);
+
 connectDB();
-let port = process.env.PORT || 1919;
+let port = process.env.PORT || 8080;
 // app.use(function (req, res, next) {
 //   res.setHeader("Access-Control-Allow-Credenttials", true);
 //   res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL);
@@ -40,5 +46,5 @@ let port = process.env.PORT || 1919;
 // });
 
 app.listen(port, () => {
-  console.log("Backend is fucking running at the port: " + port);
+  console.log("SRC Backend running at the port: " + port);
 });

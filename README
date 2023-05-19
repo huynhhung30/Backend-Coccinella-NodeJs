@@ -15,3 +15,10 @@ npm
         $ sequelize init              // Khởi tạo project.
         $ npm sequelize migration:create  // Tạo 1 migration mới.
         $ sequelize version
+
+
+// build
+npm run build-src
+npm run build
+// docker 
+docker compose -p coccinella up -d

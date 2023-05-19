@@ -1,15 +1,17 @@
 "use strict";
 
+require('dotenv').config();
 var fs = require("fs");
 var path = require("path");
 var Sequelize = require("sequelize");
 var process = require("process");
 var basename = path.basename(__filename);
 var env = process.env.NODE_ENV || "development";
-require('dotenv').config();
+
 // const config = require(__dirname + "/../config/config.json")[env];
 var db = {};
 var sequelize;
+console.log("=-=-=-=process.env.DB_PORT-=-=-=-=", process.env.DB_PORT);
 var customizeConfig = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
